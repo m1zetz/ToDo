@@ -1,11 +1,12 @@
 package com.example.todo.Model.Repository
 
-import com.example.todo.Model.DataClasses.TaskData
+
+import com.example.todo.Model.DataClasses.TaskEntity
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface TaskRepository {
-    val listOfTasks: StateFlow<List<TaskData>>
-    suspend fun getTasks()
-    suspend fun addTask()
-    suspend fun deleteTask()
+    val listOfTasks: Flow<List<TaskEntity>>
+    suspend fun addTask(task: TaskEntity)
+    suspend fun deleteTask(task: TaskEntity)
 }

@@ -2,34 +2,32 @@ package com.example.todo.Model.Repository
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.example.todo.Model.DataClasses.TaskData
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.room.Database
+import com.example.todo.Model.DataClasses.TaskDB
+import com.example.todo.Model.DataClasses.TaskEntity
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.time.LocalDate
 
-class TaskRepositoryImpl : TaskRepository {
-    private var _listOfTasks = MutableStateFlow(emptyList<TaskData>())
-    override val listOfTasks = _listOfTasks.asStateFlow()
+class TaskRepositoryImpl(val database: TaskDB) : TaskRepository {
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun getTasks() {
-        val newTask = TaskData(
-            title = "Моя задача",
-            description = "Описание задачи",
-            dateOfAnnouncement = LocalDate.now(),
-            importance = "Высокая",
-            restOfDays = 5
+    override val listOfTasks: Flow<List<TaskEntity>> = database.dao.getAllTasks()
+
+
+    override suspend fun addTask(task: TaskEntity) {
+
+        database.dao.insertTask(
+            task
         )
-
-        _listOfTasks.value = _listOfTasks.value + newTask
     }
 
-    override suspend fun addTask() {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun deleteTask() {
-        TODO("Not yet implemented")
+    override suspend fun deleteTask(task: TaskEntity) {
+        database.dao.deleteTask(task)
     }
 
 }
+
+
+

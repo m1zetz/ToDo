@@ -1,6 +1,7 @@
 package com.example.todo
 
 import android.app.Application
+import com.example.todo.Model.DataClasses.TaskDB
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 
@@ -11,5 +12,8 @@ class Application : Application() {
             androidContext(this@Application)
             modules(appModule)
         }
+    }
+    val database by lazy {
+        TaskDB.createDB(this)
     }
 }
