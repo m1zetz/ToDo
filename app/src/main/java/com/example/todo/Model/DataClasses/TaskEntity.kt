@@ -3,7 +3,6 @@ package com.example.todo.Model.DataClasses
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.time.LocalDate
 
 @Entity(tableName = "tasks")
 data class TaskEntity(
@@ -14,5 +13,6 @@ data class TaskEntity(
     val description: String,
     val dateOfAnnouncement: String,
     val importance: Int,
+    val dateOfComplete: String,
     val restOfDays: Int
 )

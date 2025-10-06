@@ -1,7 +1,5 @@
 package com.example.todo.ViewModels
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo.Model.DataClasses.TaskEntity
@@ -11,10 +9,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.util.Date
-import java.util.Locale
 
 class MainScreenViewModel(
     private val repo: TaskRepository
@@ -44,14 +38,57 @@ class MainScreenViewModel(
 
     }
 
+    var _titleEnter = MutableStateFlow("")
+    val titleEnter = _titleEnter.asStateFlow()
+
+    var _descriptionEnter = MutableStateFlow("")
+    val descriptionEnter = _descriptionEnter.asStateFlow()
+
+    var _dateOfAnnouncement = MutableStateFlow("")
+    val dateOfAnnouncement = _dateOfAnnouncement.asStateFlow()
+
+    var _dateOfComplete = MutableStateFlow("")
+    val dateOfComplete = _dateOfComplete.asStateFlow()
+
+    var _importance = MutableStateFlow(0)
+    val importance = _importance.asStateFlow()
+
+    var _restOfDays = MutableStateFlow(0)
+    val restOfDays = _restOfDays.asStateFlow()
+
+    fun setTitle(title: String) {
+        _titleEnter.value = title
+    }
+
+    fun setDescription(desc: String) {
+        _descriptionEnter.value = desc
+    }
+
+    fun setDate(date: String) {
+        _dateOfAnnouncement.value = date
+    }
+
+    fun setImportance(importance: Int) {
+        _importance.value = importance
+    }
+
+    fun setDateOfComplete(date: String) {
+        _dateOfComplete.value = date
+    }
+
+    fun calculateRestOfDays(dateOfAnnouncement: String, dateOfComplete: String) : Int{
+//        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        return 0
+    }
     fun addTask() {
         viewModelScope.launch {
             val testTask = TaskEntity(
-                title = "Тестовая задача",
-                description = "Это пример",
-                dateOfAnnouncement = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()),
-                importance = 1,
-                restOfDays = 5
+                title = _titleEnter.value,
+                description = _descriptionEnter.value,
+                dateOfAnnouncement = _dateOfAnnouncement.value,
+                importance = _importance.value,
+                dateOfComplete = _dateOfComplete.value,
+                restOfDays = calculateRestOfDays(dateOfAnnouncement.value, _dateOfComplete.value )
             )
             repo.addTask(testTask)
 

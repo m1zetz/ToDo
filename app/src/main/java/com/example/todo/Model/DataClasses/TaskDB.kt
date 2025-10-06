@@ -9,19 +9,20 @@ import androidx.room.RoomDatabase
     entities = [
         TaskEntity::class
     ],
-    version = 1
+    version = 2
 )
 abstract class TaskDB : RoomDatabase() {
 
     abstract val dao: TaskDAO
 
-    companion object{
-        fun createDB(context: Context): TaskDB{
+    companion object {
+        fun createDB(context: Context): TaskDB {
             return Room.databaseBuilder(
                 context,
                 TaskDB::class.java,
                 "task.db"
-            ).build()
+            )
+                .build()
         }
     }
 }

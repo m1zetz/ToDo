@@ -1,6 +1,7 @@
 package com.example.todo.ui.screens
 
 import android.annotation.SuppressLint
+import android.widget.DatePicker
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,7 +9,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -22,15 +25,19 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -130,21 +137,92 @@ fun MainScreen() {
             )
         }
         if (addDialogState.value) {
+            val datePickerState = rememberDatePickerState()
             AlertDialog(
                 onDismissRequest = { mainViewModel.addTaskForm(false) },
-                title = { Text(text = "Подтверждение действия") },
+                title = { Text(text = "Создайте напоминание:") },
                 text = {
+                    Column {
+                        TextField(
+                            value = "",
+                            onValueChange = {},
+                            label = {Text("Название..")}
+                        )
+                        Spacer(
+                            modifier = Modifier.height(10.dp)
+                        )
+                        TextField(
+                            value = "",
+                            onValueChange = {},
+                            label = {Text("Описание..")}
+                        )
+                        Spacer(
+                            modifier = Modifier.height(10.dp)
+                        )
+                        Button(
+                            onClick = {                            }
+                        ) {
+                            Text("Выбрать дату начала")
+                        }
+                        Spacer(
+                            modifier = Modifier.height(10.dp)
+                        )
+                        Button(
+                            onClick = {}
+                        ) {
+                            Text("Выбрать дату конца")
+                        }
+                        Spacer(
+                            modifier = Modifier.height(10.dp)
+                        )
+                        Text(
+                            "Сложность:"
+                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = true,
+                                onClick = { }
+                            )
+                            Text("Легкая",
+                                fontSize = 18.sp)
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = true,
+                                onClick = { }
+                            )
+                            Text("Нормальная",
+                                fontSize = 18.sp)
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = true,
+                                onClick = { }
+                            )
+                            Text("Сложная",
+                                fontSize = 18.sp)
+                        }
+                    }
+
+
                 },
                 confirmButton = {
                     Button({
                         mainViewModel.addTask()
                     }) {
-                        Text("Подтвердить", fontSize = 22.sp)
+                        Text("Создать", fontSize = 16.sp)
                     }
                 }
             )
         }
     }
+//    DatePicker(state = datePickerState)
 
 
 }
