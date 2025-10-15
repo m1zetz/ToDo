@@ -119,7 +119,7 @@ fun MainScreen() {
                     task.description,
                     task.importance,
                     task.dateOfAnnouncement,
-                    task.restOfDays,
+                    task.dateOfComplete,
                     {
                         mainViewModel.deleteRequestTask(task)
                     }
@@ -247,7 +247,6 @@ fun MainScreen() {
                 },
                 confirmButton = {
                     Button({
-                        mainViewModel.changeRestOfDays(mainViewModel.calculateDays(endDate))
                         mainViewModel.addTask()
                         mainViewModel.addTaskForm((false))
                         mainViewModel.clearFields()

@@ -7,6 +7,9 @@ import java.time.temporal.ChronoUnit
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun calculateDays(dateOfComplete: String): Long {
+    if (dateOfComplete == "?"){
+        return 0
+    }
     val today = LocalDate.now()
     val end = LocalDate.parse(dateOfComplete)
     return ChronoUnit.DAYS.between(today, end)

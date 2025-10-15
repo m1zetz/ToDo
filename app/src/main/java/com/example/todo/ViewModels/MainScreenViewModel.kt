@@ -120,8 +120,7 @@ class MainScreenViewModel(
                 description = _descriptionEnter.value,
                 dateOfAnnouncement = _dateOfAnnouncement.value,
                 importance = _importance.value,
-                dateOfComplete = _dateOfComplete.value,
-                restOfDays = calculateDays(_dateOfComplete.value)
+                dateOfComplete = _dateOfComplete.value
             )
             repo.addTask(testTask)
 
@@ -144,17 +143,11 @@ class MainScreenViewModel(
     fun clearFields(){
         _titleEnter.value = ""
         _descriptionEnter.value = ""
-        _dateOfAnnouncement.value = "?"
-        _dateOfComplete.value = "?"
+        _dateOfAnnouncement.value = "1111-11-11"
+        _dateOfComplete.value = "1111-11-11"
         _importance.value = "Легкая"
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun calculateDays(dateOfComplete: String): Long {
-        val today = LocalDate.now()
-        val end = LocalDate.parse(dateOfComplete)
-        return ChronoUnit.DAYS.between(today, end)
-    }
 
 
 }

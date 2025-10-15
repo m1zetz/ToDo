@@ -1,5 +1,7 @@
 package com.example.todo.ui.Composables
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,14 +20,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.todo.utils.calculateDays
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainCard(
     title: String,
     description: String,
     importance: String,
     dateOfAnnouncement: String,
-    restOfDays: Long,
+    dateOfComplete: String,
     deleteTask: () -> Unit
 )
 {
@@ -95,7 +99,7 @@ fun MainCard(
                 )
 
                 Text(
-                    "осталось дней: ${restOfDays}",
+                    "осталось дней: ${calculateDays(dateOfComplete)}",
                     fontSize = 16.sp
                 )
             }

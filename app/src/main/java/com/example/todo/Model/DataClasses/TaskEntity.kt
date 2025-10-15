@@ -16,6 +16,5 @@ data class TaskEntity @RequiresApi(Build.VERSION_CODES.O) constructor(
     val description: String,
     val dateOfAnnouncement: String,
     val importance: String,
-    val dateOfComplete: String,
-    val restOfDays: Long
+    val dateOfComplete: String
 )
