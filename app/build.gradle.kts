@@ -42,6 +42,7 @@ android {
 
 dependencies {
     implementation("androidx.room:room-ktx:2.8.1")
+    implementation(libs.androidx.ui)
     kapt("androidx.room:room-compiler:2.8.1")
     implementation ("io.insert-koin:koin-android:3.3.0")
     implementation ("io.insert-koin:koin-androidx-navigation:3.3.0")

@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase
     entities = [
         TaskEntity::class
     ],
-    version = 2
+    version = 3
 )
 abstract class TaskDB : RoomDatabase() {
 

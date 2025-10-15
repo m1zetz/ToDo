@@ -9,4 +9,6 @@ interface TaskRepository {
     val listOfTasks: Flow<List<TaskEntity>>
     suspend fun addTask(task: TaskEntity)
     suspend fun deleteTask(task: TaskEntity)
+
+    suspend fun getTodayTasks()
 }

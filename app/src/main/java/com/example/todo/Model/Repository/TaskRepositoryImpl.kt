@@ -27,6 +27,10 @@ class TaskRepositoryImpl(val database: TaskDB) : TaskRepository {
         database.dao.deleteTask(task)
     }
 
+    override suspend fun getTodayTasks() {
+        database.dao.getAllTasks()
+    }
+
 }
 
 

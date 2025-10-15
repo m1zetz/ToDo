@@ -1,5 +1,7 @@
 package com.example.todo.ViewModels
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo.Model.DataClasses.TaskEntity
@@ -9,6 +11,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 
 class MainScreenViewModel(
     private val repo: TaskRepository
@@ -20,12 +26,27 @@ class MainScreenViewModel(
         initialValue = emptyList()
     )
 
+
+//    val todayTasks = repo.getTodayTasks()
+
     private var _openDeleteDialogState = MutableStateFlow(false)
     val openDeleteDialogState = _openDeleteDialogState.asStateFlow()
 
     private var _openAddDialogState = MutableStateFlow(false)
     val openAddDialogState = _openAddDialogState.asStateFlow()
 
+    private var _datePickerStateStart = MutableStateFlow(false)
+    val datePickerStateStart = _datePickerStateStart.asStateFlow()
+
+    private var _datePickerStateEnd = MutableStateFlow(false)
+    val datePickerStateEnd = _datePickerStateEnd.asStateFlow()
+
+    fun changeDatePickerStateStart(state: Boolean){
+        _datePickerStateStart.value = state
+    }
+    fun changeDatePickerStateEnd(state: Boolean){
+        _datePickerStateEnd.value = state
+    }
     private val _currentTask = MutableStateFlow<TaskEntity?>(null)
     val currentTask = _currentTask.asStateFlow()
     fun deleteDialog(state: Boolean) {
@@ -38,23 +59,27 @@ class MainScreenViewModel(
 
     }
 
-    var _titleEnter = MutableStateFlow("")
+    private var _titleEnter = MutableStateFlow("")
     val titleEnter = _titleEnter.asStateFlow()
 
-    var _descriptionEnter = MutableStateFlow("")
+    private var _descriptionEnter = MutableStateFlow("")
     val descriptionEnter = _descriptionEnter.asStateFlow()
 
-    var _dateOfAnnouncement = MutableStateFlow("")
+    private var _dateOfAnnouncement = MutableStateFlow("?")
     val dateOfAnnouncement = _dateOfAnnouncement.asStateFlow()
 
-    var _dateOfComplete = MutableStateFlow("")
+    private var _dateOfComplete = MutableStateFlow("?")
     val dateOfComplete = _dateOfComplete.asStateFlow()
 
-    var _importance = MutableStateFlow(0)
+    private var _importance = MutableStateFlow("Легкая")
     val importance = _importance.asStateFlow()
 
-    var _restOfDays = MutableStateFlow(0)
+    var _restOfDays = MutableStateFlow<Long>(0)
     val restOfDays = _restOfDays.asStateFlow()
+
+    fun changeRestOfDays(days: Long){
+        _restOfDays.value = days
+    }
 
     fun setTitle(title: String) {
         _titleEnter.value = title
@@ -64,22 +89,30 @@ class MainScreenViewModel(
         _descriptionEnter.value = desc
     }
 
-    fun setDate(date: String) {
-        _dateOfAnnouncement.value = date
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun setDateOfAnnouncement(date: LocalDate?) {
+        _dateOfAnnouncement.value = date.toString()
     }
 
-    fun setImportance(importance: Int) {
+    fun setImportance(importance: String) {
         _importance.value = importance
     }
 
-    fun setDateOfComplete(date: String) {
-        _dateOfComplete.value = date
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun setDateOfComplete(date: LocalDate?) {
+        _dateOfComplete.value = date.toString()
     }
 
-    fun calculateRestOfDays(dateOfAnnouncement: String, dateOfComplete: String) : Int{
-//        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        return 0
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun convertMillisToDate(millis: Long?): LocalDate? {
+        return millis?.let {
+            Instant.ofEpochMilli(it)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+        }
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     fun addTask() {
         viewModelScope.launch {
             val testTask = TaskEntity(
@@ -88,7 +121,7 @@ class MainScreenViewModel(
                 dateOfAnnouncement = _dateOfAnnouncement.value,
                 importance = _importance.value,
                 dateOfComplete = _dateOfComplete.value,
-                restOfDays = calculateRestOfDays(dateOfAnnouncement.value, _dateOfComplete.value )
+                restOfDays = calculateDays(_dateOfComplete.value)
             )
             repo.addTask(testTask)
 
@@ -107,6 +140,20 @@ class MainScreenViewModel(
             }
             _openDeleteDialogState.value = false
         }
+    }
+    fun clearFields(){
+        _titleEnter.value = ""
+        _descriptionEnter.value = ""
+        _dateOfAnnouncement.value = "?"
+        _dateOfComplete.value = "?"
+        _importance.value = "Легкая"
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun calculateDays(dateOfComplete: String): Long {
+        val today = LocalDate.now()
+        val end = LocalDate.parse(dateOfComplete)
+        return ChronoUnit.DAYS.between(today, end)
     }
 
 
