@@ -41,6 +41,7 @@ android {
 }
 
 dependencies {
+    implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
     implementation("androidx.room:room-ktx:2.8.1")
     implementation(libs.androidx.ui)
     kapt("androidx.room:room-compiler:2.8.1")

@@ -1,11 +1,16 @@
 package com.example.todo.ViewModels
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresPermission
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo.Model.DataClasses.TaskEntity
 import com.example.todo.Model.Repository.TaskRepository
+import com.example.todo.Notifications.NotificationScheduler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,7 +32,6 @@ class MainScreenViewModel(
     )
 
 
-//    val todayTasks = repo.getTodayTasks()
 
     private var _openDeleteDialogState = MutableStateFlow(false)
     val openDeleteDialogState = _openDeleteDialogState.asStateFlow()
@@ -74,12 +78,6 @@ class MainScreenViewModel(
     private var _importance = MutableStateFlow("Легкая")
     val importance = _importance.asStateFlow()
 
-    var _restOfDays = MutableStateFlow<Long>(0)
-    val restOfDays = _restOfDays.asStateFlow()
-
-    fun changeRestOfDays(days: Long){
-        _restOfDays.value = days
-    }
 
     fun setTitle(title: String) {
         _titleEnter.value = title
@@ -112,8 +110,10 @@ class MainScreenViewModel(
         }
     }
 
+
+    @SuppressLint("ScheduleExactAlarm")
     @RequiresApi(Build.VERSION_CODES.O)
-    fun addTask() {
+    fun addTask(context: Context) {
         viewModelScope.launch {
             val testTask = TaskEntity(
                 title = _titleEnter.value,
@@ -125,6 +125,21 @@ class MainScreenViewModel(
             repo.addTask(testTask)
 
         }
+
+        val completeDate = LocalDate.parse(_dateOfComplete.value)
+        val triggerDateTime = completeDate.atTime(10, 0)
+
+        val triggerMillis = triggerDateTime
+            .atZone(ZoneId.systemDefault())
+            .toInstant()
+            .toEpochMilli()
+
+        NotificationScheduler.scheduleNotification(
+            context,
+            _titleEnter.value,
+            _descriptionEnter.value,
+            triggerMillis
+        )
     }
 
     fun deleteRequestTask(task: TaskEntity) {
@@ -143,8 +158,8 @@ class MainScreenViewModel(
     fun clearFields(){
         _titleEnter.value = ""
         _descriptionEnter.value = ""
-        _dateOfAnnouncement.value = "1111-11-11"
-        _dateOfComplete.value = "1111-11-11"
+        _dateOfAnnouncement.value = "?"
+        _dateOfComplete.value = "?"
         _importance.value = "Легкая"
     }
 

@@ -1,7 +1,12 @@
 package com.example.todo.ui.screens
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.content.Context
+import android.content.Intent
 import android.os.Build
+import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,18 +42,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import android.provider.Settings
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
+import com.example.todo.Notifications.NotificationHandler
 import com.example.todo.ViewModels.MainScreenViewModel
 import com.example.todo.ui.Composables.MainCard
 import org.koin.androidx.compose.koinViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ServiceCast")
 @Composable
-fun MainScreen() {
+fun MainScreen(context: Context) {
+
+    val notificationHandler = NotificationHandler(context)
+
 
     val mainViewModel: MainScreenViewModel = koinViewModel()
 
@@ -149,9 +159,15 @@ fun MainScreen() {
                 text = {
                     if (showDatePickerStart.value) {
                         Popup(
-                            onDismissRequest = { mainViewModel.changeDatePickerStateStart(false)
+                            onDismissRequest = {
+                                mainViewModel.changeDatePickerStateStart(false)
                                 val millis = datePickerStateStart.selectedDateMillis
-                                mainViewModel.setDateOfAnnouncement(mainViewModel.convertMillisToDate(millis))},
+                                mainViewModel.setDateOfAnnouncement(
+                                    mainViewModel.convertMillisToDate(
+                                        millis
+                                    )
+                                )
+                            },
                         ) {
                             DatePicker(
                                 state = datePickerStateStart,
@@ -161,9 +177,15 @@ fun MainScreen() {
                     }
                     if (showDatePickerEnd.value) {
                         Popup(
-                            onDismissRequest = { mainViewModel.changeDatePickerStateEnd(false)
+                            onDismissRequest = {
+                                mainViewModel.changeDatePickerStateEnd(false)
                                 val millis = datePickerStateEnd.selectedDateMillis
-                                mainViewModel.setDateOfComplete(mainViewModel.convertMillisToDate(millis))},
+                                mainViewModel.setDateOfComplete(
+                                    mainViewModel.convertMillisToDate(
+                                        millis
+                                    )
+                                )
+                            },
                         ) {
                             DatePicker(
                                 state = datePickerStateEnd,
@@ -174,8 +196,7 @@ fun MainScreen() {
                     Column {
                         TextField(
                             value = title.value,
-                            onValueChange = {
-                                    newValue ->
+                            onValueChange = { newValue ->
                                 mainViewModel.setTitle(newValue)
                             },
                             label = { Text("Название..") }
@@ -193,7 +214,7 @@ fun MainScreen() {
                         Spacer(
                             modifier = Modifier.height(10.dp)
                         )
-                        Row(verticalAlignment = Alignment.CenterVertically){
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Button(
                                 onClick = {
                                     mainViewModel.changeDatePickerStateStart(true)
@@ -209,7 +230,7 @@ fun MainScreen() {
                         Spacer(
                             modifier = Modifier.height(10.dp)
                         )
-                        Row(verticalAlignment = Alignment.CenterVertically){
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Button(
                                 onClick = { mainViewModel.changeDatePickerStateEnd(true) },
                                 modifier = Modifier.weight(1f)
@@ -247,9 +268,22 @@ fun MainScreen() {
                 },
                 confirmButton = {
                     Button({
-                        mainViewModel.addTask()
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                            if (!alarmManager.canScheduleExactAlarms()) {
+                                // открываем системное окно разрешения
+                                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                                context.startActivity(intent)
+                                Toast.makeText(context, "Разреши использование точных будильников", Toast.LENGTH_LONG).show()
+                                return@Button
+                            }
+                        }
+
+                        mainViewModel.addTask(context)
                         mainViewModel.addTaskForm((false))
                         mainViewModel.clearFields()
+
+
                     }) {
                         Text("Создать", fontSize = 16.sp)
                     }
@@ -257,7 +291,4 @@ fun MainScreen() {
             )
         }
     }
-
-
-
 }
